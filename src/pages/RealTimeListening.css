@@ -135,3 +135,19 @@
 }
 
 
+.insight-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.insight-output p {
+  background: var(--card-bg);
+  border-left: 4px solid var(--accent-color, #4CAF50);
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: white;
+}
