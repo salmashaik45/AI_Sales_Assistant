@@ -332,6 +332,134 @@ export default function RealTimeListening({ history, setHistory }) {
           </div>
         </Card>
 
+         
+
+
+
+                 {/* Insight Generation Box */}
+        <Card title="🔍 Insight Generation" subtitle="AI-driven, multi-sentence call insights">
+          <div className="insight-box">
+            <button
+              className="btn primary"
+              onClick={() => {
+                // Helper: choose best template based on transcript + sentiment
+                const text = (transcript || "").toLowerCase();
+
+                // detect conditions (simple heuristics; extend as needed)
+                const contains = (arr) => arr.some((k) => text.includes(k));
+                const droppedKeywords = ["dropped", "disconnected", "call cut", "hang up", "left the call"];
+                const recommendKeywords = ["recommend", "suggest", "which one", "what should i", "advice"];
+                const purchaseKeywords = ["buy", "purchase", "order", "i'll buy", "i want to buy", "i want to order"];
+                const confusionKeywords = ["don't know", "dont know", "confused", "not sure", "unclear", "lack of clarity", "price?"];
+                const negativeKeywords = ["not good", "bad", "didn't like", "dont like", "won't"]
+
+                const isDropped = contains(droppedKeywords);
+                const askedRecommend = contains(recommendKeywords);
+                const hasPurchaseIntent = contains(purchaseKeywords);
+                const isConfused = contains(confusionKeywords);
+                const hasNegative = contains(negativeKeywords) || (sentiment || "").toLowerCase().includes("negative");
+
+                const isPositive = (sentiment || "").toLowerCase().includes("positive");
+                const isNeutral = (sentiment || "").toLowerCase().includes("neutral");
+
+                // Build dynamic content snippets
+                const custName = (customer && (customer.Name || customer.Email || customer.Phone)) ? (customer.Name || customer.Email || customer.Phone) : "The customer";
+                const topReco = (recommendations && recommendations.length > 0) ? recommendations[0].name + " — " + recommendations[0].desc : null;
+
+                // Templates (multi-sentence)
+                const templates = {
+                  positive: [
+                    `The customer expressed strong positive sentiment and appeared genuinely satisfied with the product features discussed. This suggests high potential for repeat purchases and brand advocacy.`,
+                    `Follow up with a personalized thank-you message and invite them to leave a review—social proof will amplify conversions.`,
+                    topReco ? `Recommended next step: propose a complementary product such as ${topReco} tailored to their recent interest.` : `Recommended next step: offer a helpful cross-sell or premium upgrade that matches their expressed needs.`
+                  ].join(" "),
+                  dropped: [
+                    `The call ended unexpectedly and the customer disconnected mid-conversation, likely before a decision could be reached.`,
+                    `Because the discussion included product recommendations, it's important to re-engage promptly. Reach out using the same channel (or SMS/email) within 24 hours and reference the key points discussed to rebuild continuity.`,
+                    `Recommended tactic: offer a brief summary of the missed items and include a limited-time incentive to encourage completion of the purchase.`
+                  ].join(" "),
+                  recommend: [
+                    `The customer explicitly asked for product recommendations during the call. They are in the consideration stage and may need curated options to convert.`,
+                    `The sales team should send a tailored list (top 3 items) highlighting why each fits their use-case, plus short testimonials or a one-minute demo video link.`,
+                    topReco ? `Try leading with ${topReco} as the first suggestion, then provide 1–2 alternatives.` : `Provide 2–3 hand-picked options and a clear next action (buy link, trial, or callback).`
+                  ].join(" "),
+                  confusion: [
+                    `The conversation contained indicators of confusion or lack of clarity around features/pricing. This is a sign that product messaging might be too technical or unclear in this case.`,
+                    `Follow up with a concise comparison sheet, a short explainer video, or a friendly demo to clarify differences and benefits.`,
+                    `Also, train agents to simplify explanations into tangible benefits (how it saves time or money) to reduce friction on future calls.`
+                  ].join(" "),
+                  negative: [
+                    `The call reflected dissatisfaction or complaint, and the customer sounded unhappy with some aspect of the product/service.`,
+                    `Prioritize a quick support outreach that acknowledges the issue, apologizes, and offers a concrete remediation or compensation where appropriate.`,
+                    `Turning this negative into a solved case can recover trust—and at times create a strong retention story if handled promptly and empathetically.`
+                  ].join(" "),
+                  neutral: [
+                    `The conversation had a neutral tone with informative exchange but no clear purchase trigger.`,
+                    `To increase engagement, schedule a short follow-up that includes targeted product benefits, one or two tailored recommendations, and social proof.`,
+                    `A gentle nudge (promo code or helpful content) often moves neutral leads toward conversion.`
+                  ].join(" "),
+                  fallback: [
+                    `The call has ended. Based on the transcript and sentiment, additional inspection could yield a more targeted next step.`,
+                    `Consider using the generated post-call summary and any CRM history to craft a personalized follow-up message.`
+                  ].join(" ")
+                };
+
+                // Decision logic (priority order)
+                let insightText = "";
+                if (isDropped) {
+                  insightText = templates.dropped;
+                } else if (hasNegative) {
+                  insightText = templates.negative;
+                } else if (askedRecommend) {
+                  insightText = templates.recommend;
+                } else if (hasPurchaseIntent) {
+                  // purchase intent -> treat similar to positive but with action to close sale
+                  insightText = [
+                    `The customer signaled purchase intent during the conversation—this is a warm lead.`,
+                    `The sales team should act quickly with a personalized offer, payment options, or a small limited-time discount to close the sale.`,
+                    topReco ? `Suggested offer: bundle ${topReco} with a small discount or free shipping.` : `Suggested offer: provide a simple, clear purchase link and confirm availability.`
+                  ].join(" ");
+                } else if (isConfused) {
+                  insightText = templates.confusion;
+                } else if (isPositive) {
+                  insightText = templates.positive;
+                } else if (isNeutral) {
+                  insightText = templates.neutral;
+                } else {
+                  insightText = templates.fallback;
+                }
+
+                // Add a short actionable checklist or next steps
+                const nextSteps = [
+                  "1) Send a personalized follow-up referencing the call highlights.",
+                  "2) Attach 1–2 curated product links or a one-minute demo.",
+                  "3) Offer a limited-time incentive if appropriate (discount / free shipping).",
+                  "4) Log the interaction in CRM with tags: follow-up, recommendation, purchase-intent."
+                ].join(" ");
+
+                // Final output: add customer name if available
+                const finalOutput = (custName ? `${custName}: ` : "") + insightText + "\n\n" + "Suggested Next Steps:\n" + nextSteps;
+
+                // Render to DOM
+                const box = document.getElementById("insight-output");
+                if (box) {
+                  box.style.display = "block";
+                  box.querySelector("p").textContent = finalOutput;
+                }
+              }}
+            >
+              Generate Insights
+            </button>
+
+            <div id="insight-output" className="insight-output" style={{ display: "none", marginTop: "15px" }}>
+              <p style={{ whiteSpace: "pre-wrap", background: "var(--card-bg)", padding: "15px", borderRadius: "10px" }}></p>
+            </div>
+          </div>
+        </Card>
+
+
+
+
         {/* CRM Lookup Card */}
         <Card title="🔎 CRM Lookup" subtitle="Enter customer email / phone to fetch profile & suggestions">
           <div className="lookup-row">
