@@ -1,94 +1,101 @@
-# AI Sales Call Assistant  
+# 🤖 AI Sales Call Assistant
 
-This project is an **AI-powered sales call assistant**.  
-It analyzes customer messages and transcripts for **sentiment** and **tone**, and automatically logs the results into a **Google Sheet** for easy tracking.  
+An AI-powered sales assistant that analyzes customer conversations (text or voice) to detect sentiment and tone, and logs insights into Google Sheets for tracking and analysis.
 
 ---
 
 ## 🚀 Features
-- Real-time **sentiment analysis** (Positive / Negative / Neutral).  
-- **Tone detection** (Upset, Friendly, Polite, Neutral, Angry).  
-- Works with **voice input**.  
-- Automatic logging into **Google Sheets** with 4 columns:  
-  - Transcript  
-  - Sentiment  
-  - Tone  
-  - Date & Time  
+
+- 🎙️ Real-time sentiment analysis (Positive / Negative / Neutral)
+- 🧠 Tone detection (Friendly, Angry, Upset, Polite, Neutral)
+- 🗣️ Supports both text and voice input
+- 📊 Automatic logging into Google Sheets
+- 📅 Stores transcript, sentiment, tone, and timestamp
 
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend**: React (with CSS styling)  
-- **Backend**: FastAPI (Python)  
-- **AI Model**: Groq LLaMA  
-- **Database**: Google Sheets (via Service Account API)  
+
+- **Frontend:** React (CSS)
+- **Backend:** FastAPI (Python)
+- **AI Model:** Groq LLaMA
+- **Database:** Google Sheets API
 
 ---
 
-## 📥 How to Clone the Project
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+## 📊 How It Works
 
-⚙️ Backend Setup
-Create a virtual environment:
+1. User inputs text or voice  
+2. Backend processes input and sends it to the AI model  
+3. AI returns sentiment and tone analysis  
+4. Results are stored and logged into Google Sheets  
+5. Data can be accessed anytime for insights  
+
+---
+
+## 👩‍💻 My Contribution
+
+This project was developed as part of the **Infosys Springboard Virtual Internship 6.0** as a team project.
+
+### My contributions include:
+
+- Participated in initial system architecture planning  
+- Maintained Agile documentation and tracked team progress  
+- Supported testing and coordination during development  
+
+---
+
+## 📝 Note
+
+This repository is a fork of the original team project.
+
+The original implementation was primarily developed by the team lead.
+
+---
+
+## ⚙️ Setup Instructions
+
+### 🔹 Backend Setup
+
+```
 python -m venv venv
-source venv/bin/activate   # On Mac/Linux
-venv\Scripts\activate      # On Windows
-
-Install dependencies:
+venv\Scripts\activate
 pip install -r requirements.txt
-Create a .env file in the backend folder and add:
+```
 
-ini
-GROQ_API_KEY=your_groq_api_key_here
-Add your Google service account file cred.json into the backend folder.
+Create a .env file and add:
 
-Replace the Google Sheet ID in the backend code:
+```
+GROQ_API_KEY=your_api_key_here
+```
+
+Add your Google service account file (cred.json) to the backend folder.
+
+Update your Google Sheet ID in the code:
+
+```
 SHEET_ID = "your_google_sheet_id_here"
+```
 
 Run the backend:
+
+```
 uvicorn main:app --reload
-🎨 Frontend Setup
+```
 
-Move into the frontend folder:
+### 🔹 Frontend Setup
+
+```
 cd frontend
-
-Install dependencies:
 npm install
-
-Run the React app:
 npm start
+```
 
-📊 How It Works
-User submits text.
+## 📄 License
 
-The backend sends it to Groq (LLaMA).
+This project is licensed under the MIT License.
 
-AI responds with Sentiment + Tone + Explanation.
+## 🙌 Acknowledgement
 
-The result is stored in memory and appended to Google Sheets.
-
-You can view your analytics/history anytime.
-
-✅ Example Google Sheet Row
-Transcript	Sentiment	Tone	Date
-I want to cancel my product	Negative	Upset	11/09/2025, 05:50 PM
-
-📗 Google Sheets Setup
-Go to Google Cloud Console.
-
-Create a Service Account and download the JSON credentials → save it as cred.json in your backend folder.
-
-Open your Google Sheet → share it with your service account email (something like xxxx@project.iam.gserviceaccount.com) and give Editor access.
-
-Find your Google Sheet ID from the URL:
-https://docs.google.com/spreadsheets/d/<YOUR_SHEET_ID>/edit#gid=0
-Copy the part between /d/ and /edit → that is your Sheet ID.
-
-Put that ID into your backend code:
-SHEET_ID = "YOUR_SHEET_ID"
-
-👨‍💻 Author
-Made with ❤️ for learning AI + Web Development.
-
-
+Developed as part of the Infosys Springboard Virtual Internship 6.0 program.
+Special thanks to the team members and mentor for guidance and collaboration.
